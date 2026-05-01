@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Prediction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: none;
+            font-size: 1em;
+            cursor: pointer;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-btn:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .result-box {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-price {
+            font-size: 2.5em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .result-detail {
+            color: #666;
+            margin: 10px 0;
+            font-size: 1em;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee;
+            border-left-color: #f44;
+            color: #c33;
+            display: none;
+            margin-top: 20px;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .model-info {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .model-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .features-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .feature-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .feature-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .feature-type {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-price {
+                font-size: 2em;
+            }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 House Price Predictor</h1>
+            <p><span class="status-indicator"></span>ML-Powered Price Estimation</p>
+        </div>
+
+        <div class="content">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('predict')">💰 Predict Price</button>
+                <button class="tab-btn" onclick="switchTab('info')">📊 Model Information</button>
+                <button class="tab-btn" onclick="switchTab('features')">🔍 Features</button>
+            </div>
+
+            <!-- Predict Tab -->
+            <div id="predict" class="tab-content active">
+                <div class="form-section">
+                    <h2>Enter House Details</h2>
+                    <form id="predictionForm">
+                        <div class="form-grid" id="featureInputs">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                        <div class="button-group">
+                            <button type="submit" class="btn-primary">🔮 Predict Price</button>
+                            <button type="reset" class="btn-secondary">🔄 Reset Form</button>
+                        </div>
+                    </form>
+
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p>Generating prediction...</p>
+                    </div>
+
+                    <div class="result-box" id="resultBox">
+                        <h3>Prediction Result</h3>
+                        <div class="result-price" id="predictedPrice">--</div>
+                        <div class="result-detail">
+                            <strong>Model:</strong> <span id="modelType">--</span>
+                        </div>
+                        <div class="result-detail">
+                            <strong>Confidence:</strong> <span id="confidence">--</span>
+                        </div>
+                    </div>
+
+                    <div class="error" id="errorBox"></div>
+                </div>
+            </div>
+
+            <!-- Model Info Tab -->
+            <div id="info" class="tab-content">
+                <h2>Model Information</h2>
+                <div class="model-info" id="modelInfoBox">
+                    <div class="spinner"></div>
+                    <p>Loading model information...</p>
+                </div>
+            </div>
+
+            <!-- Features Tab -->
+            <div id="features" class="tab-content">
+                <h2>Expected Features</h2>
+                <p style="color: #666; margin-bottom: 20px;">Total Features: <strong id="featureCount">--</strong></p>
+                <div class="features-list" id="featuresList">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin || 'http://localhost:8000';
+        let modelFeatures = [];
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'info') loadModelInfo();
+            if (tabName === 'features') loadFeatures();
+        }
+
+        // Load features from API
+        async function loadFeatures() {
+            try {
+                const response = await fetch(`${API_BASE}/features`);
+                const data = await response.json();
+                modelFeatures = data.feature_names || [];
+
+                document.getElementById('featureCount').textContent = data.num_features;
+                const featuresList = document.getElementById('featuresList');
+                featuresList.innerHTML = modelFeatures
+                    .slice(0, 20)
+                    .map(feat => `
+                        <div class="feature-item">
+                            <div class="feature-name">${feat}</div>
+                            <div class="feature-type">${data.feature_types[feat] || 'numeric'}</div>
+                        </div>
+                    `).join('');
+
+                populateForm(modelFeatures);
+            } catch (error) {
+                console.error('Error loading features:', error);
+                document.getElementById('featuresList').innerHTML = '<p style="color: red;">Error loading features</p>';
+            }
+        }
+
+        // Populate form with features
+        function populateForm(features) {
+            const inputsContainer = document.getElementById('featureInputs');
+            if (inputsContainer.children.length > 0) return; // Already populated
+
+            const commonFeatures = [
+                'MSSubClass', 'LotFrontage', 'LotArea', 'OverallQual', 'OverallCond',
+                'YearBuilt', 'YearRemodAdd', 'GrLivArea', 'TotalBsmtSF', 'GarageArea', 'GarageCars'
+            ];
+
+            const fieldsToShow = features.filter(f => commonFeatures.includes(f) || features.slice(0, 15).includes(f));
+
+            fieldsToShow.forEach(feature => {
+                const group = document.createElement('div');
+                group.className = 'form-group';
+                group.innerHTML = `
+                    <label for="${feature}">${feature.replace(/([A-Z])/g, ' $1').trim()}</label>
+                    <input type="number" id="${feature}" name="${feature}" step="0.01" placeholder="0">
+                `;
+                inputsContainer.appendChild(group);
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const features = {};
+            document.querySelectorAll('#featureInputs input').forEach(input => {
+                if (input.value) {
+                    features[input.name] = parseFloat(input.value) || input.value;
+                }
+            });
+
+            if (Object.keys(features).length === 0) {
+                showError('Please enter at least one feature value');
+                return;
+            }
+
+            await makePrediction(features);
+        });
+
+        // Make prediction
+        async function makePrediction(features) {
+            const loading = document.getElementById('loading');
+            const resultBox = document.getElementById('resultBox');
+            const errorBox = document.getElementById('errorBox');
+
+            loading.classList.add('show');
+            resultBox.classList.remove('show');
+            errorBox.classList.remove('show');
+
+            try {
+                const response = await fetch(`${API_BASE}/predict`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ features })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Prediction failed');
+                }
+
+                const data = await response.json();
+                displayResult(data);
+            } catch (error) {
+                showError(`Error: ${error.message}`);
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+
+        // Display prediction result
+        function displayResult(data) {
+            document.getElementById('predictedPrice').textContent =
+                `$${Math.round(data.prediction).toLocaleString()}`;
+            document.getElementById('modelType').textContent = data.model;
+            document.getElementById('confidence').textContent = data.confidence;
+            document.getElementById('resultBox').classList.add('show');
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorBox = document.getElementById('errorBox');
+            errorBox.textContent = message;
+            errorBox.classList.add('show');
+        }
+
+        // Load model information
+        async function loadModelInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/model-info`);
+                const data = await response.json();
+
+                const html = `
+                    <div class="info-row">
+                        <span class="info-label">Model Type:</span>
+                        <span class="info-value">${data.model_type}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Features:</span>
+                        <span class="info-value">${data.features_count}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Model Path:</span>
+                        <span class="info-value" style="font-size: 0.85em; word-break: break-all;">${data.model_path}</span>
+                    </div>
+                `;
+
+                document.getElementById('modelInfoBox').innerHTML = html;
+            } catch (error) {
+                document.getElementById('modelInfoBox').innerHTML =
+                    '<p style="color: red;">Error loading model information</p>';
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', async () => {
+            await loadFeatures();
+        });
+    </script>
+</body>
+</html>
