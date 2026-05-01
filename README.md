@@ -1,269 +1,287 @@
-# House Price Prediction System
+<div align="center">
 
-A production-grade machine learning system for predicting residential property prices using advanced regression models, feature engineering, and a RESTful API with FastAPI.
+# House Prediction AI
 
-## 🚀 Features
+An end-to-end machine learning project that predicts residential house prices using feature engineering, model comparison, FastAPI, and a simple web interface.
 
-- **Multi-Model Training**: Trains and compares LinearRegression, Ridge, RandomForest, and GradientBoosting models
-- **Hyperparameter Tuning**: Grid search optimization for top-performing models
-- **Advanced Feature Engineering**: Derives domain-specific features (house age, quality scores, area combinations)
-- **Production API**: FastAPI with multiple endpoints for predictions, model info, and metrics
-- **Comprehensive Testing**: Unit and integration tests with pytest
-- **Model Serialization**: Joblib-based model and preprocessor persistence
-- **Structured Logging**: Production-grade logging throughout
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-Data-150458?style=for-the-badge&logo=pandas&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Portfolio%20Project-brightgreen?style=for-the-badge)
 
-## 📋 Table of Contents
+</div>
 
-- [Quick Start](#quick-start)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Data Preparation](#data-preparation)
-- [Training](#training)
-- [API Usage](#api-usage)
-- [Frontend](#frontend)
-- [Testing](#testing)
-- [Model Performance](#model-performance)
-- [Development](#development)
+---
 
-## 🚀 Quick Start
+## Overview
 
-```bash
-# 1. Clone or navigate to project
-cd House_Prediction_AI
+House Prediction AI is a complete machine learning workflow built around the Ames housing dataset. It loads raw housing data, engineers useful features, trains multiple regression models, selects the best performer, and exposes predictions through a FastAPI backend and browser-based frontend.
 
-# 2. Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+This project is designed to demonstrate practical ML engineering skills: data preprocessing, model training, API design, testing, documentation, and safe public repository hygiene.
 
-# 3. Install dependencies
-pip install -r requirements.txt
+## What This Project Includes
 
-# 4. Train the model
-python src/train.py
+| Area | Details |
+| --- | --- |
+| Machine Learning | Linear Regression, Ridge, Random Forest, Gradient Boosting |
+| Feature Engineering | House age, remodel age, basement/garage/pool flags, total area, quality score |
+| Model Selection | Cross-validation, hyperparameter tuning, final model comparison |
+| Backend | FastAPI prediction API with health, prediction, feature, metrics, and model-info endpoints |
+| Frontend | Simple browser UI for entering house details and viewing predictions |
+| Testing | Pytest tests for preprocessing and API behavior |
+| Repo Safety | `.env`, virtual environment, logs, cache files, and model artifacts are ignored |
 
-# 5. Start API server
-uvicorn api.main:app --reload
+## Project Structure
 
-# 6. Open browser to http://localhost:8000
-# View API docs: http://localhost:8000/docs
-# Use frontend: http://localhost:8000/static/index.html
-```
-
-## 📁 Project Structure
-
-```
+```text
 House_Prediction_AI/
-├── data/
-│   ├── raw/
-│   │   └── train.csv              # Original dataset (500 samples, 81 features)
-│   └── processed/                 # Placeholder for processed data
-├── src/
-│   ├── __init__.py
-│   ├── utils.py                   # Utilities (logging, model I/O)
-│   ├── preprocess.py              # Feature engineering & preprocessing
-│   ├── train.py                   # Model training & comparison
-│   └── predict.py                 # Inference logic
-├── api/
-│   ├── __init__.py
-│   └── main.py                    # FastAPI application
-├── frontend/
-│   └── index.html                 # Web UI for predictions
-├── model/
-│   ├── best_model.joblib          # Trained model
-│   ├── preprocessor.joblib        # Fitted preprocessor pipeline
-│   ├── feature_importance.png     # Feature importance plot
-│   └── metrics.json               # Model evaluation metrics
-├── tests/
-│   ├── __init__.py
-│   ├── conftest.py                # Pytest fixtures
-│   ├── test_preprocess.py         # Preprocessing tests
-│   └── test_api.py                # API integration tests
-├── logs/                          # Application logs
-├── requirements.txt               # Python dependencies (pinned versions)
-├── .env.example                   # Environment configuration template
-├── .gitignore                     # Git ignore rules
-└── README.md                      # This file
+|-- api/
+|   `-- main.py                 # FastAPI application
+|-- app/
+|   `-- main.py                 # Minimal API entry point
+|-- data/
+|   `-- raw/
+|       `-- train.csv           # Training dataset
+|-- frontend/
+|   `-- index.html              # Browser UI
+|-- notebooks/
+|   `-- eda.ipynb               # Exploratory analysis notebook
+|-- src/
+|   |-- preprocess.py           # Feature engineering and preprocessing
+|   |-- predict.py              # Prediction logic
+|   |-- train.py                # Training and model comparison
+|   `-- utils.py                # Shared utilities
+|-- tests/
+|   |-- test_api.py             # API tests
+|   `-- test_preprocess.py      # Preprocessing tests
+|-- .env.example                # Safe environment template
+|-- requirements.txt            # Python dependencies
+|-- run.py                      # Auto-start script
+|-- run.bat                     # Windows launcher
+`-- README.md
 ```
 
-## 📦 Installation
+Note: trained model files are generated locally inside `model/` and are intentionally ignored for public GitHub safety.
 
-### Prerequisites
-- Python 3.10+
-- pip or conda
+## Quick Start
 
-### Setup
+### 1. Clone The Repository
 
-1. **Clone the repository**
 ```bash
-git clone <repository-url>
+git clone https://github.com/vigyantgupta/House_Prediction_AI.git
 cd House_Prediction_AI
 ```
 
-2. **Create virtual environment**
+### 2. Create A Virtual Environment
+
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
-3. **Install dependencies**
+Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+macOS/Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+### 3. Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-4. **Configure environment** (optional)
-```bash
-cp .env.example .env
-# Edit .env with your configuration
-```
-
-## 📊 Data Preparation
-
-The dataset is expected to be a tab-separated file (TSV) located at `data/raw/train.csv`.
-
-**Dataset Format:**
-- **Shape**: 500 rows × 81 columns
-- **Target**: `SalePrice` (numeric, $)
-- **Features**: Mix of numeric and categorical features
-- **Missing Values**: Handled automatically during preprocessing
-
-**Dataset Columns** (sample):
-- Numeric: `LotFrontage`, `LotArea`, `OverallQual`, `YearBuilt`, `GrLivArea`, `GarageArea`
-- Categorical: `MSZoning`, `Street`, `LotShape`, `Neighborhood`, `BldgType`
-- Derived: `HouseAge`, `HasBasement`, `HasGarage`, `TotalArea`, `QualityScore`
-
-## 🏋️ Training
-
-### Run Model Training
+### 4. Train The Model
 
 ```bash
-python src/train.py
+python -m src.train
 ```
 
-**What happens:**
-1. Loads and preprocesses data with feature engineering
-2. Trains baseline models with 5-fold cross-validation:
-   - Linear Regression
-   - Ridge Regression
-   - Random Forest (100 trees)
-   - Gradient Boosting (100 trees)
-3. Tunes top 2 models with GridSearchCV
-4. Evaluates all models on train/val/test splits
-5. Saves best model to `model/best_model.joblib`
-6. Saves preprocessor to `model/preprocessor.joblib`
-7. Generates feature importance plot
+This creates the local model artifacts required for prediction:
 
-**Console Output Example:**
-```
-Training baseline models with 5-fold cross-validation...
-Training Linear Regression...
-  CV R² (train/val): 0.7845 / 0.7234
-
-FINAL MODEL COMPARISON
-Model                Train R²  Val R²  Test R²
-Random Forest        0.9456    0.8934  0.8812
-
-✅ Best model: Random Forest (val R²: 0.8934)
+```text
+model/best_model.joblib
+model/preprocessor.joblib
 ```
 
-## 🔌 API Usage
-
-### Start API Server
+### 5. Start The API
 
 ```bash
 uvicorn api.main:app --reload
 ```
 
-Server runs on `http://localhost:8000`
+Open these URLs:
 
-### Available Endpoints
-
-**1. Health Check**
-```bash
-GET /
+```text
+API root:      http://localhost:8000
+API docs:      http://localhost:8000/docs
+Frontend:      http://localhost:8000/predict-page
+Static UI:     http://localhost:8000/static/index.html
 ```
 
-**2. Make Prediction**
+## One-Command Start
+
+On Windows, you can run:
+
 ```bash
-POST /predict
+run.bat
+```
+
+Or use Python directly:
+
+```bash
+python run.py
+```
+
+The launcher creates a virtual environment if needed, installs dependencies, trains the model if it is missing, and starts the API server.
+
+## API Endpoints
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| GET | `/` | Health check |
+| POST | `/predict` | Predict house price |
+| GET | `/features` | List expected model features |
+| GET | `/model-info` | Show model metadata |
+| GET | `/metrics` | Return training metrics if available |
+| GET | `/docs` | Interactive Swagger docs |
+
+### Example Prediction Request
+
+```json
 {
   "features": {
     "MSSubClass": 60,
+    "MSZoning": "RL",
+    "LotFrontage": 65,
     "LotArea": 8450,
     "OverallQual": 7,
-    ...
+    "OverallCond": 5,
+    "YearBuilt": 2003,
+    "YearRemodAdd": 2003,
+    "GrLivArea": 1710,
+    "TotalBsmtSF": 856,
+    "GarageCars": 2,
+    "GarageArea": 548
   }
 }
 ```
 
-**3. Get Features Schema**
-```bash
-GET /features
+### Example Response
+
+```json
+{
+  "success": true,
+  "prediction": 208736.42,
+  "confidence": "high",
+  "model": "RandomForestRegressor"
+}
 ```
 
-**4. Get Model Info**
-```bash
-GET /model-info
+## Machine Learning Pipeline
+
+The training flow is implemented in `src/train.py`.
+
+```text
+Raw data
+  -> Feature engineering
+  -> Missing value handling
+  -> Scaling and encoding
+  -> Baseline model training
+  -> Cross-validation
+  -> Hyperparameter tuning
+  -> Final model selection
+  -> Local model export
 ```
 
-**5. Get Metrics**
-```bash
-GET /metrics
-```
+Models compared:
 
-View full API docs at: http://localhost:8000/docs
+| Model | Purpose |
+| --- | --- |
+| Linear Regression | Simple baseline |
+| Ridge Regression | Regularized linear model |
+| Random Forest Regressor | Nonlinear ensemble model |
+| Gradient Boosting Regressor | Boosted tree-based model |
 
-## 🌐 Frontend
+## Testing
 
-Open `frontend/index.html` in a browser or access via the API server.
-
-**Features:**
-- Interactive form to input house features
-- Real-time price predictions
-- Display model information
-- Show feature importance
-
-## 🧪 Testing
+Run all tests:
 
 ```bash
-# Run all tests
 pytest tests/ -v
+```
 
-# Run with coverage
+Run tests with coverage:
+
+```bash
 pytest tests/ -v --cov=src
 ```
 
-## 📈 Model Performance (Test Set)
+## Environment Configuration
 
-| Model | R² Score | RMSE | MAE |
-|-------|----------|------|-----|
-| Linear Regression | 0.7156 | $33,012 | $28,956 |
-| Ridge Regression | 0.7212 | $32,146 | $25,432 |
-| Random Forest (Tuned) | **0.8812** | **$18,235** | **$12,346** |
-| Gradient Boosting | 0.8345 | $22,457 | $18,567 |
-
-**Top Features:**
-1. OverallQual - Overall material and finish quality
-2. GrLivArea - Above grade living area
-3. TotalArea - Total area (living + basement)
-4. GarageCars - Number of garage spaces
-5. YearBuilt - Construction year
-
-## 👨‍💻 Development
+Copy the example file if you want local overrides:
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run tests
-pytest tests/ -v
-
-# Start API
-uvicorn api.main:app --reload
+copy .env.example .env
 ```
 
-## 📞 Support
+On macOS/Linux:
 
-For issues:
-1. Check README documentation
-2. Review test files for examples
-3. Check API docs at `/docs` endpoint
+```bash
+cp .env.example .env
+```
+
+`.env.example` is safe to commit. Real `.env` files are ignored by Git.
+
+## Public Repository Safety
+
+This repository is prepared for public GitHub sharing:
+
+| File or Folder | Status |
+| --- | --- |
+| `.env` | Ignored |
+| `.venv/` | Ignored |
+| `logs/` | Ignored |
+| `__pycache__/` | Ignored |
+| `model/*.pkl` | Ignored |
+| `model/*.joblib` | Ignored |
+| `.env.example` | Safe to share |
+| `data/raw/train.csv` | Included for reproducible training |
+
+## Tech Stack
+
+| Category | Tools |
+| --- | --- |
+| Language | Python |
+| API | FastAPI, Uvicorn |
+| ML | scikit-learn, NumPy, Pandas, Joblib |
+| Visualization | Matplotlib |
+| Frontend | HTML, CSS, JavaScript |
+| Testing | Pytest, HTTPX |
+
+## Future Improvements
+
+- Add GitHub Actions for automated tests
+- Add dependency scanning
+- Improve API hardening for production deployment
+- Add Docker support
+- Add model performance charts to the frontend
+- Add a deployed demo link
+
+## Author
+
+Built by [Vigyant Gupta](https://github.com/vigyantgupta) as a machine learning portfolio project.
+
+---
+
+<div align="center">
+
+If you found this project useful, consider starring the repository.
+
+</div>
